@@ -40,7 +40,7 @@ function love.load()
     chestI = cheststate.state0
 	
     --talk sound
-    t = love.audio.newSource("res/audio/music/title.wav", "stream")
+    t = love.audio.newSource("res/audio/music/title.ogg", "stream")
     t:setLooping(true)
     t:play()
     
