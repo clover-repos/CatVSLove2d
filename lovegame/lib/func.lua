@@ -506,3 +506,39 @@ function water()
             pl.dir:draw(pl.SS, pl.coll:getX(), pl.coll:getY() - 18, nil, 4, nil, 6, 9)
     end
 end
+
+function beforePlayer()
+	if level.layers["treeS"] then
+            for i, obj in ipairs(level.layers["treeS"].objects) do
+                local treeI = treeI
+
+                if obj.y + 7 <= pl.coll:getY() then
+                    love.graphics.draw(
+                        treeI,
+                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
+                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
+                        nil,
+                        3.8
+                    )
+                end
+            end
+        end
+end
+
+function afterPlayer()
+	 if level.layers["treeS"] then
+            for i, obj in ipairs(level.layers["treeS"].objects) do
+                local treeI = treeI
+
+                if obj.y + 7 > pl.coll:getY() then
+                    love.graphics.draw(
+                        treeI,
+                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
+                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
+                        nil,
+                        3.8
+                    )
+                end
+            end
+        end
+end

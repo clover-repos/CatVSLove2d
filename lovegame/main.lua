@@ -8,6 +8,7 @@ function love.load()
         require("lib/func") --Imports extra functions
         makeVars() --Declear more stuff
 	isOpen = {}
+	ImP = false
 
     --setup some imports
     cam = came()
@@ -20,7 +21,7 @@ function love.load()
     pl:load()
 
     --devmode
-    devmode = false
+    devmode = true
 
     if devmode == true then
         pl.hasSword = true
@@ -55,7 +56,7 @@ function love.update(dt)
 
     w = love.graphics.getWidth()
     h = love.graphics.getHeight()
-
+if ImP == false then
     if gs.state == gs.death then
         if deathT < 0.16667 then
             deathT = deathT + publicDT
@@ -467,7 +468,12 @@ function love.update(dt)
                 end
             end
         end
-    end
+    end end if ImP == true then
+	ImT = ImT - publicDT
+	if ImT <= 0 then
+		ImP = false
+	end
+end
     reinitSize()
 end
 
@@ -523,21 +529,7 @@ function love.draw()
             end
         end
 
-        if level.layers["treeS"] then
-            for i, obj in ipairs(level.layers["treeS"].objects) do
-                local treeI = treeI
-
-                if obj.y + 7 <= pl.coll:getY() then
-                    love.graphics.draw(
-                        treeI,
-                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
-                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
-                        nil,
-                        3.8
-                    )
-                end
-            end
-        end
+        beforePlayer()
 
         if isH == true then
             love.graphics.setColor(255, 0, 0, 0.4)
@@ -548,21 +540,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255)
 
-        if level.layers["treeS"] then
-            for i, obj in ipairs(level.layers["treeS"].objects) do
-                local treeI = treeI
-
-                if obj.y + 7 > pl.coll:getY() then
-                    love.graphics.draw(
-                        treeI,
-                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
-                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
-                        nil,
-                        3.8
-                    )
-                end
-            end
-        end
+       afterPlayer()
 
         if pl.swim == true then
             level:drawLayer(level.layers["swimU"])
@@ -646,8 +624,6 @@ function love.keyreleased(key)
                 pl.ani.right = pl.ani.swordR
                 upPLI()
                 pl.swipe:play()
-                pl.sh = true
-                shakeDuration = 0.1
 
                 if pl.d == "up" then
                     sw = world:newRectangleCollider(pl.coll:getX() - 20, pl.coll:getY() - 50, 10, 40)
@@ -693,12 +669,16 @@ function love.keyreleased(key)
                         if pl.d == "right" then
                             enem:setLinearVelocity(500, 0)
                         end
+				
+			 pl.sh = true
+                	shakeDuration = 0.1
 
                         if enem.h <= 0 then
                             enem:destroy()
                             pl.sh = true
-                            gs.state = gs.death
                             shakeDuration = 0.25
+			    ImP = true
+			    ImT = 0.1
                         end
                     end
                 end

@@ -143,7 +143,7 @@ function pl.update(dt)
 
     local co = world:queryCircleArea(pl.coll:getX(), pl.coll:getY(), 18, {"ene"})
 
-    if #co > 0 and isH == false and devmode == false and not isDog == true then
+    if #co > 0 and isH == false and not isDog == true then
             pl.cH = pl.cH - 0.5
             hSE:play()
             isH = true
