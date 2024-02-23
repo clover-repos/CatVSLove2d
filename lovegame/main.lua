@@ -16,6 +16,7 @@ function love.load()
     
     --collisionClassIds
     makecollclass()
+firstFramwS = true
 
     --load
     pl:load()
@@ -34,13 +35,17 @@ function love.load()
     slimeG = ani.newGrid(16, 16, slimeSS:getWidth(), slimeSS:getHeight())
     slimeL = ani.newAnimation(slimeG("1-3", 1), 0.15)
     slimeA = ani.newAnimation(slimeG("1-3", 1), 0.18 / (3 / 2))
+    idleAn = ani.newAnimation(slimeG('4-5',1),0.18)
+    slimeD = ani.newAnimation(slimeG('6-8',1),0.25)
+
+deaT = 0.3
 
     cheststate = {}
     cheststate.state0 = ani.newAnimation(chestG("1-1", 1), 0.25)
     cheststate.state1 = ani.newAnimation(chestG("2-2", 1), 0.25)
     chestI = cheststate.state0
 	
-    --talk sound
+    --titlescreen theme
     t = love.audio.newSource("res/audio/music/title.ogg", "stream")
     t:setLooping(true)
     t:play()
@@ -57,6 +62,9 @@ function love.update(dt)
     w = love.graphics.getWidth()
     h = love.graphics.getHeight()
 if ImP == false then
+if level then        
+	level:update(publicDT)
+end
     if gs.state == gs.death then
         if deathT < 0.16667 then
             deathT = deathT + publicDT
@@ -76,55 +84,37 @@ if ImP == false then
     end
 
     if gs.state == gs.pls then
+ slimeL:update(dt)
+    slimeA:update(dt)
+	for i, enem in ipairs(ene) do    
+if enem.dying == true and enem:isDestroyed() == false  then	
+	idleAn:update(dt)
+else
+	idleAn:gotoFrame(1)
+end
+end
+    slimeD:update(dt)
         if pl.useSword == true then
-            if swordT < 0.16667/2 then
-                if pl.d == "up" then
-                    local x = sw:getX()
-                    local y = sw:getY() - 2
-                    sw:setPosition(x, y)
+            if swordT < 0.15 and firstFramwS == true then
+		firstFramwS = false                
+		if pl.d == "up" then
+                    
                 end
                 if pl.d == "down" then
-                    local x = sw:getX()
-                    local y = sw:getY() + 2
-                    sw:setPosition(x, y)
+                    
                 end
                 if pl.d == "left" then
-                    local x = sw:getX() - 2
-                    local y = sw:getY()
-                    sw:setPosition(x, y)
+                    
                 end
                 if pl.d == "right" then
-                    local x = sw:getX() + 2
-                    local y = sw:getY()
-                    sw:setPosition(x, y)
-                end
-            else
-                if pl.d == "up" then
-                    local x = sw:getX()
-                    local y = sw:getY() + 1
-                    sw:setPosition(x, y)
-                end
-                if pl.d == "down" then
-                    local x = sw:getX()
-                    local y = sw:getY() - 1
-                    sw:setPosition(x, y)
-                end
-                if pl.d == "left" then
-                    local x = sw:getX() + 1
-                    local y = sw:getY()
-                    sw:setPosition(x, y)
-                end
-                if pl.d == "right" then
-                    local x = sw:getX() - 1
-                    local y = sw:getY()
-                    sw:setPosition(x, y)
+                    
                 end
             end
 
-            if swordT < 0.16667+(0.16667/2) then
+            if swordT < 0.3 then
                 swordT = swordT + publicDT --dt
             end
-            if swordT >= 0.16667+(0.16667/2) then
+            if swordT >= 0.3 then
                 pl.useSword = false
                 swordT = 0
                 if pl.swim == false then
@@ -135,6 +125,7 @@ if ImP == false then
                 end
                 upPLI()
                 sw:destroy()
+		firstFramwS = true                
                 pl.dir:gotoFrame(1)
             end
         end
@@ -150,7 +141,7 @@ if ImP == false then
 
         if pl.cH <= 0 then
             gs.state = gs.ds
-            cd = "You died... But I did not \ncode in a deathscreen. Soon?"
+            cd = "You died... But for testing I'll \ngive your health back."
             reH = true
         end
 
@@ -158,13 +149,10 @@ if ImP == false then
         mW = level.width * TS
         mH = level.height * TS
 
-        level:update(publicDT)
+
 
         pl:update(publicDT)
 	pl.dir:update(dt)
-
-        slimeA:update(publicDT)
-        slimeL:update(publicDT)
 
         local co = world:queryRectangleArea(pl.coll:getX(), pl.coll:getY(), 16, 16, {"ws"})
         if #co > 0 and not waterfall:isPlaying() then
@@ -366,7 +354,7 @@ if ImP == false then
         if level.layers["ene"] then
             local px = pl.coll:getX()
             local py = pl.coll:getY()
-            es = 120
+            es = 180
             e = world:queryCircleArea(px, py, 200, {"ene"})
             for i, enem in ipairs(e) do
                 if enem:isDestroyed() == false and enem.hC == false then
@@ -375,9 +363,10 @@ if ImP == false then
                     ex = enem:getX()
                     ey = enem:getY()
 
-                    if #e > 0 then
+                    if #e > 0 and not enem.isDying == true then
                         if enem.state == idle then
                             enem.state = attack
+	enem.idleA = false
                         end
 
                         if ex < px then
@@ -404,12 +393,28 @@ if ImP == false then
                             eyV = 0
                         end
 
+		local sL = 0.7073
+
+    if exV ~= 0 and eyV ~= 0 then
+        exV = exV * sL
+        eyV = eyV * sL
+    end
+
+
                         enem:setLinearVelocity(exV, eyV)
                     end
                 end
             end
                 for i, enem in ipairs(ene) do
-                    if #e == 0 then
+		if enem.isDying == true and enem:isDestroyed() == false then
+			enem.lastMoments = enem.lastMoments - publicDT
+			if enem.lastMoments <= 0 then
+				enem:destroy()
+			end
+		end            if enem.s then 
+
+				end
+		if #e == 0 then
                     if enem:isDestroyed() == false then
                         if enem.state == attack or enem.hC == true then
                             enem.state = idle
@@ -420,20 +425,37 @@ if ImP == false then
                         enem.rT = enem.rT - publicDT --dt
 
                         if enem.rT <= 0 then
-                            local EX = math.random(2)
-                            local EY = math.random(2)
+                            local EX = math.random(3)
+                            local EY = math.random(3)
 
-                            if EX > 1.5 then
+                            if EX < 2 then
                                 EX = -es
-                            else
+                            elseif EX < 2.5 then
                                 EX = es
-                            end
+				else
+					EX = 0                            
+				end
 
-                            if EY > 1.5 then
+                            if EY < 2 then
                                 EY = -es
-                            else
+                            elseif EY < 2.5 then
                                 EY = es
-                            end
+				else
+					EY = 0                            
+				end
+
+if EY == 0 and EX == 0 then
+	enem.idleA = true
+else
+	enem.idleA = false
+end
+
+			local sL = 0.7073
+
+    if EX ~= 0 and EY ~= 0 then
+        EX = EX * sL
+        EY = EY * sL
+    end
 
                             enem:setLinearVelocity(EX, EY)
                             enem.rT = 0.9
@@ -506,18 +528,26 @@ function love.draw()
         if level.layers["ene"] then
             for i, enem in ipairs(ene) do
                 if enem:isDestroyed() == false then
-                    local s = nil
                     if enem.state == idle then
-                        s = slimeL
+                        enem.s = slimeL
                     elseif enem.state == attack then
-                        s = slimeA
+                        enem.s = slimeA
                     end
+		    if enem.idleA == true then
+			enem.s = idleAn
+		    end
+		    if enem.isDying == true then
+			enem.s = slimeD
+		    end
+
+
+			
                     local x, y = enem:getPosition()
                     if enem.hC == true then
                         love.graphics.setColor(255, 0, 0, 0.9)
                         enem.hT = enem.hT + publicDT --dt
                     end
-                    s:draw(slimeSS, x - 8 * 4, y - 8 * 5, nil, 3.9)
+                    enem.s:draw(slimeSS, x - 8 * 4, y - 8 * 5, nil, 3.9)
                     if enem.hT >= 1/6 then
                         enem.hT = 0
                         enem.hC = false
@@ -674,7 +704,8 @@ function love.keyreleased(key)
                 	shakeDuration = 0.1
 
                         if enem.h <= 0 then
-                            enem:destroy()
+			    enem.isDying = true
+			    enem.lastMoments = deaT
                             pl.sh = true
                             shakeDuration = 0.25
 			    ImP = true

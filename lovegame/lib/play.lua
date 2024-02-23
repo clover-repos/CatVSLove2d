@@ -49,6 +49,11 @@ function pl.load()
     pl.hasSword = false
     pl.useSword = false
 
+    sD = math.rad(90)
+    sU = math.rad(270)
+    sL = math.rad(180)
+    sR = 0
+
     pl.s = 200
 
     swordI = love.graphics.newImage('res/ent/ply/sword.png')
@@ -70,7 +75,7 @@ function pl.load()
     timer = 0
     timerSE = 0
 
-    pl.coll = world:newCircleCollider(800, 800, 17)
+    pl.coll = world:newBSGRectangleCollider(800, 800, 32.5,32.5,12)
     pl.coll:setFixedRotation(true)
     world:addCollisionClass("pl", {ignores = {"wa", "ws", "we", "cm", "cm2", "cm3", "cm4","t","t2","t3",'t4','ewa'}})
     world:addCollisionClass("sw", {ignores = {"wa", "ws", "we", "cm", "cm2", "cm3", "cm4","t","t2","t3",'t4','ewa','sw','wall','tree','ch','pl','ene'}})
@@ -95,10 +100,10 @@ function pl.load()
     pl.ani.swimL = ani.newAnimation(pl.g("1-4", 4+4), 0.30)
     pl.ani.swimR = ani.newAnimation(pl.g("1-4", 2+4), 0.30)
 
-    pl.ani.swordU = ani.newAnimation(pl.g("6-7", 3), 0.10)
-    pl.ani.swordD = ani.newAnimation(pl.g("6-7", 1), 0.10)
-    pl.ani.swordL = ani.newAnimation(pl.g("6-7", 4), 0.10)
-    pl.ani.swordR = ani.newAnimation(pl.g("6-7", 2), 0.10)
+    pl.ani.swordU = ani.newAnimation(pl.g("6-8", 3), 0.10)
+    pl.ani.swordD = ani.newAnimation(pl.g("6-8", 1), 0.10)
+    pl.ani.swordL = ani.newAnimation(pl.g("6-8", 4), 0.10)
+    pl.ani.swordR = ani.newAnimation(pl.g("6-8", 2), 0.10)
 
     pl.ani.up = pl.ani.walkU
     pl.ani.down = pl.ani.walkD
@@ -142,16 +147,27 @@ function pl.update(dt)
     end
 
     local co = world:queryCircleArea(pl.coll:getX(), pl.coll:getY(), 18, {"ene"})
-
-    if #co > 0 and isH == false and not isDog == true then
+for i, enem in ipairs(co) do
+	if enem.isDying == true then
+		EcH = true
+	else
+		EcH = false	
+	end
+end
+    if #co > 0 and isH == false and not isDog == true and not EcH == true then
             pl.cH = pl.cH - 0.5
             hSE:play()
             isH = true
+	    pl.sh = true
+	    if pl.cH < pl.mH/2 then
+		gs.state = gs.death
+		pl.sh = true
+	    end
     end
 
     if pl.useSword == false then
     	
-	--Grid Like Movement
+	--Simi Grid Like Movement
 
     if love.keyboard.isDown("up","w") then
         uP = true
@@ -289,28 +305,33 @@ end
 
 function pl.draw()
 	if pl.d == "up" and pl.useSword == true then
-            love.graphics.draw(swordI, sw:getX() - 10, sw:getY() + 20, math.rad(270), 3)
+            love.graphics.draw(swordI, sw:getX() - 10, sw:getY() + 20, sU, 3)
 	end
 	if pl.d == "left" and pl.useSword == true then
-            love.graphics.draw(swordI, sw:getX() + 35, sw:getY() + 9, math.rad(180), 3)
+            love.graphics.draw(swordI, sw:getX() + 35, sw:getY() + 9, sL, 3)
         end
 
 
         if pl.d == "right" and pl.useSword == true then
-            love.graphics.draw(swordI, sw:getX() - 35, sw:getY() - 10, nil, 3)
+            love.graphics.draw(swordI, sw:getX() - 35, sw:getY() - 10, sR, 3)
         end
-    
-    pl.dir:draw(pl.SS, pl.coll:getX()-4.5, pl.coll:getY() - 43
+    if pl.d ~= 'right' then
+    pl.dir:draw(pl.SS, pl.coll:getX()-4.5, pl.coll:getY() - 45
 
 , nil, 3.1
 , nil, 6, 9)
+else
+	 pl.dir:draw(pl.SS, pl.coll:getX()-7.5, pl.coll:getY() - 45
 
+, nil, 3.1
+, nil, 6, 9)
+end
 
     if pl.swim == true and m == true then
         love.graphics.draw(pl.splash, pl.coll:getX() - pl.splash1X, pl.coll:getY() - (4 * 3) - pl.splash1Y, nil, 3, nil, 6, 9)
         love.graphics.draw(pl.splash, pl.coll:getX() - pl.splash2X, pl.coll:getY() - (4 * 3) - pl.splash2Y, nil, 3)
     end
 	if pl.d == "down" and pl.useSword == true then
-            love.graphics.draw(swordI, sw:getX() + 10, sw:getY() - 40, math.rad(90), 3)
+            love.graphics.draw(swordI, sw:getX() + 10, sw:getY() - 40, sD, 3)
         end
 end
