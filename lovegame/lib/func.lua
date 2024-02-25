@@ -367,7 +367,7 @@ function loadNewMap(isD,mapPath, mapID, music,first,t,t2,t3,t4)
     
 	for i, chest in ipairs(che) do
 		if not chestStates[chest] then
-			if not isOpen[i] then
+			if not isOpen[mapID][i] then
 				chestStates[chest] = 0
 			else
 				chestStates[chest] = 1	
@@ -507,38 +507,39 @@ function water()
     end
 end
 
-function beforePlayer()
-	if level.layers["treeS"] then
-            for i, obj in ipairs(level.layers["treeS"].objects) do
-                local treeI = treeI
+function beforePlayer(layer,image,oY,x,y,scale,coll)
+	 if level.layers[layer] then
+                local dr = image
 
-                if obj.y + 7 <= pl.coll:getY() then
+		if not oY or oY == 'def' then oY = 7 end
+
+                if coll:getY() + oY <= pl.coll:getY() then
                     love.graphics.draw(
-                        treeI,
-                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
-                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
+                        dr,
+                        coll:getX() - x,
+                        coll:getY() - y,
                         nil,
-                        3.8
+                        scale
                     )
                 end
             end
-        end
 end
 
-function afterPlayer()
-	 if level.layers["treeS"] then
-            for i, obj in ipairs(level.layers["treeS"].objects) do
-                local treeI = treeI
 
-                if obj.y + 7 > pl.coll:getY() then
+function afterPlayer(layer,image,oY,x,y,scale,coll)
+	 if level.layers[layer] then
+                local dr = image
+
+		if not oY or oY == 'def' then oY = 7 end
+
+                if coll:getY() + oY > pl.coll:getY() then
                     love.graphics.draw(
-                        treeI,
-                        obj.x - treeI:getWidth() / 2 * 3.4 + 5 * 3 - 10,
-                        obj.y - treeI:getHeight() * 3.8 + obj.height * 1.5,
+                        dr,
+                        coll:getX() - x,
+                        coll:getY() - y,
                         nil,
-                        3.8
+                        scale
                     )
                 end
             end
-        end
 end

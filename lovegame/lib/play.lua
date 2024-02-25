@@ -53,6 +53,7 @@ function pl.load()
     sU = math.rad(270)
     sL = math.rad(180)
     sR = 0
+	pl.offY = 0
 
     pl.s = 200
 
@@ -100,10 +101,10 @@ function pl.load()
     pl.ani.swimL = ani.newAnimation(pl.g("1-4", 4+4), 0.30)
     pl.ani.swimR = ani.newAnimation(pl.g("1-4", 2+4), 0.30)
 
-    pl.ani.swordU = ani.newAnimation(pl.g("6-8", 3), 0.10)
-    pl.ani.swordD = ani.newAnimation(pl.g("6-8", 1), 0.10)
-    pl.ani.swordL = ani.newAnimation(pl.g("6-8", 4), 0.10)
-    pl.ani.swordR = ani.newAnimation(pl.g("6-8", 2), 0.10)
+    pl.ani.swordU = ani.newAnimation(pl.g("6-8", 3), 0.125)
+    pl.ani.swordD = ani.newAnimation(pl.g("6-8", 1), 0.125)
+    pl.ani.swordL = ani.newAnimation(pl.g("6-8", 4), 0.125)
+    pl.ani.swordR = ani.newAnimation(pl.g("6-8", 2), 0.125)
 
     pl.ani.up = pl.ani.walkU
     pl.ani.down = pl.ani.walkD
@@ -316,12 +317,12 @@ function pl.draw()
             love.graphics.draw(swordI, sw:getX() - 35, sw:getY() - 10, sR, 3)
         end
     if pl.d ~= 'right' then
-    pl.dir:draw(pl.SS, pl.coll:getX()-4.5, pl.coll:getY() - 45
+    pl.dir:draw(pl.SS, pl.coll:getX()-4.5, pl.coll:getY() - 45 - pl.offY
 
 , nil, 3.1
 , nil, 6, 9)
 else
-	 pl.dir:draw(pl.SS, pl.coll:getX()-7.5, pl.coll:getY() - 45
+	 pl.dir:draw(pl.SS, pl.coll:getX()-7.5, pl.coll:getY() - 45 - pl.offY
 
 , nil, 3.1
 , nil, 6, 9)

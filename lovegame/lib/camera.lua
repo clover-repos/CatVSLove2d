@@ -27,7 +27,7 @@ function  camera.update()
 
         --cam shake
 
-        if pl.sh == true then
+        if pl.sh == true and gs.state == gs.pls then
             if shakeDuration > 0 then
                 local offsetX = love.math.random(-shakeMagnitude, shakeMagnitude)
                 local offsetY = love.math.random(-shakeMagnitude, shakeMagnitude)
