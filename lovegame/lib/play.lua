@@ -243,12 +243,7 @@ end
         end
     end
 
-    local sL = 0.7073
-
-    if x ~= 0 and y ~= 0 then
-        x = x * sL
-        y = y * sL
-    end
+    x, y = norm(x,y)
 
     pl.coll:setLinearVelocity(x, y)
     end
@@ -316,17 +311,10 @@ function pl.draw()
         if pl.d == "right" and pl.useSword == true then
             love.graphics.draw(swordI, sw:getX() - 35, sw:getY() - 10, sR, 3)
         end
-    if pl.d ~= 'right' then
-    pl.dir:draw(pl.SS, pl.coll:getX()-4.5, pl.coll:getY() - 45 - pl.offY
+	    pl.dir:draw(pl.SS, pl.coll:getX()-7.5, pl.coll:getY() - 45 - pl.offY
+        ,nil, 3.1
+        , nil, 6, 9)
 
-, nil, 3.1
-, nil, 6, 9)
-else
-	 pl.dir:draw(pl.SS, pl.coll:getX()-7.5, pl.coll:getY() - 45 - pl.offY
-
-, nil, 3.1
-, nil, 6, 9)
-end
 
     if pl.swim == true and m == true then
         love.graphics.draw(pl.splash, pl.coll:getX() - pl.splash1X, pl.coll:getY() - (4 * 3) - pl.splash1Y, nil, 3, nil, 6, 9)

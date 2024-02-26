@@ -41,6 +41,9 @@ function makeVars()
     waterfall = love.audio.newSource("res/audio/music/WM.ogg", "stream")
     waterfall:setLooping(true)
     hSE = love.audio.newSource("res/audio/sfx/hurt.mp3", "static")
+    treeCut = love.audio.newSource("res/audio/sfx/wood1.ogg", "static")
+    treeDie = love.audio.newSource("res/audio/sfx/wood1.ogg"--[[Placeholder for the sound]], "static")
+
     --import
     require("lib/play")
     came = require("lib/camera")
@@ -48,6 +51,17 @@ function makeVars()
     wf = require("lib/windfield")
     require("lib/flux")
     ani = require("lib/ani")
+end
+
+function norm(x,y)
+    local sL = 0.7073
+
+    if x ~= 0 and y ~= 0 then
+        x = x * sL
+        y = y * sL
+    end
+    
+    return x, y
 end
 
 function setWindowSize(ful, width, height)
@@ -508,7 +522,8 @@ function water()
 end
 
 function beforePlayer(layer,image,oY,x,y,scale,coll)
-	 if level.layers[layer] then
+	if coll:isDestroyed() == false then
+    if level.layers[layer] then
                 local dr = image
 
 		if not oY or oY == 'def' then oY = 7 end
@@ -522,12 +537,14 @@ function beforePlayer(layer,image,oY,x,y,scale,coll)
                         scale
                     )
                 end
-            end
+            end end
 end
 
 
 function afterPlayer(layer,image,oY,x,y,scale,coll)
-	 if level.layers[layer] then
+    if coll:isDestroyed() == false then
+ 
+    if level.layers[layer] then
                 local dr = image
 
 		if not oY or oY == 'def' then oY = 7 end
@@ -541,5 +558,5 @@ function afterPlayer(layer,image,oY,x,y,scale,coll)
                         scale
                     )
                 end
-            end
+            end end
 end

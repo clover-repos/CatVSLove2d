@@ -389,12 +389,7 @@ function love.update(dt)
                                 eyV = 0
                             end
 
-                            local sL = 0.7073
-
-                            if exV ~= 0 and eyV ~= 0 then
-                                exV = exV * sL
-                                eyV = eyV * sL
-                            end
+                            exV, eyV = norm(exV,eyV)
 
                             enem:setLinearVelocity(exV, eyV)
                         end
@@ -446,12 +441,7 @@ function love.update(dt)
                                     enem.idleA = false
                                 end
 
-                                local sL = 0.7073
-
-                                if EX ~= 0 and EY ~= 0 then
-                                    EX = EX * sL
-                                    EY = EY * sL
-                                end
+                                EX, EY = norm(EX,EY)
 
                                 enem:setLinearVelocity(EX, EY)
                                 enem.rT = 0.9
@@ -563,7 +553,11 @@ function love.draw()
         end
 
 	for i, tree in ipairs(trees) do
-        	beforePlayer("treeS",treeI,nil,treeI:getWidth()*(3.8/2),treeI:getHeight()*3,3.8,tree)
+        if tree.flT then
+            if tree.flT > 0 then if gs.state == gs.pls then tree.flT = tree.flT - publicDT end love.graphics.setColor(1,0,0) end
+        end
+        beforePlayer("treeS",treeI,nil,treeI:getWidth()*(3.8/2),treeI:getHeight()*3,3.8,tree)
+        love.graphics.setColor(255,255,255)
 	end
 
         if isH == true then
@@ -576,7 +570,11 @@ function love.draw()
         love.graphics.setColor(255, 255, 255)
 	
 	for i, tree in ipairs(trees) do
-        	afterPlayer("treeS",treeI,nil,treeI:getWidth()*(3.8/2),treeI:getHeight()*3,3.8,tree)
+        if tree.flT then
+            if tree.flT > 0 then if gs.state == gs.pls then tree.flT = tree.flT - publicDT end love.graphics.setColor(1,0,0) end
+        end
+        afterPlayer("treeS",treeI,nil,treeI:getWidth()*(3.8/2),treeI:getHeight()*3,3.8,tree)
+        love.graphics.setColor(255,255,255)
 	end
 
         if pl.swim == true then
@@ -725,6 +723,34 @@ function love.keyreleased(key)
 
                 sw:setFixedRotation(true)
                 sw:setCollisionClass("sw")
+                if pl.d == "up" or pl.d == "down" then
+                    sqx = 5
+                    sqy = 20
+
+                    swordColliders = world:queryRectangleArea(sw:getX() - sqx, sw:getY() - sqy, 10, 40, {"tree"})
+                else
+                    sqx = 20
+                    sqy = 5
+
+                    swordColliders = world:queryRectangleArea(sw:getX() - sqx, sw:getY() - sqy, 40, 10, {"tree"})
+                end
+
+		if #swordColliders > 0 then
+			for i, coll in ipairs(swordColliders) do
+                if not coll.health then coll.health = 4 end
+                coll.health = coll.health - 1
+                coll.flT = 0.2
+                if coll.health <= 0 then coll:destroy() end
+                pl.swipe:stop()
+                if coll.health > 0 then
+			if treeCut:isPlaying() then treeCut:stop() end                    
+			treeCut:play()
+                else
+		    treeDie:stop()
+                    treeDie:play()
+                end
+			end
+		end
             end
         end
 
