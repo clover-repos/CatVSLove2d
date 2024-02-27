@@ -1,20 +1,27 @@
 --init bugspray
 chestStates = {}
 --Test
+function mapIDTable(tablename)
+    tablename[1] = {}
+    tablename[2] = {}
+    tablename[2.5] = {}
+    tablename[3] = {}
+    tablename[5] = {}
+end
+
 function love.load()
     --SudoRandomSetup
     math.randomseed(os.time())
     --Declare and import stuff
-    require("lib/func") --Imports extra functions
+    require("src/firststart/startup") --Imports extra functions
     makeVars() --Declear more stuff
     isOpen = {}
     ImP = false
 
-    isOpen[1] = {}
-    isOpen[2] = {}
-    isOpen[2.5] = {}
-    isOpen[3] = {}
-    isOpen[5] = {}
+    targetFPS = 60
+    updateTime = 1 / targetFPS
+
+    mapIDTable(isOpen)
 
     --setup some imports
     cam = came()
@@ -66,7 +73,8 @@ function love.load()
 end
 
 function love.update(dt)
-    publicDT = dt
+    maxDT = 0.1
+    publicDT = math.min(dt, maxDT)
 
     if mapI then
         if mapI == 1 then isOpenI = 1 end
@@ -488,6 +496,7 @@ function love.update(dt)
         end
     end
     reinitSize()
+    love.timer.sleep(updateTime)
 end
 
 function love.draw()
@@ -775,6 +784,7 @@ function love.keyreleased(key)
         if key == "return" then
             if gs.state == gs.pls then
                 gs.state = gs.ps
+		collectgarbage("step")
 
                 if waterfall:isPlaying() then
                     rW = true
@@ -797,6 +807,7 @@ function love.keyreleased(key)
                 end
             elseif gs.state == gs.ps then
                 gs.state = gs.pls
+		collectgarbage("step")
 
                 if rW == true then
                     waterfall:play()
