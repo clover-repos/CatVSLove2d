@@ -1,10 +1,11 @@
-idle = 1
-attack = 2
 
 function makeVars()
+    idle = 1
+    attack = 2
+
     currentCharIndex = 0
     cr = false
-    
+
     shakeMagnitude = 4
 
     reH = false
@@ -51,6 +52,7 @@ function makeVars()
     wf = require("lib/windfield")
     flux = require("lib/flux")
     ani = require("lib/ani")
+    require('src/ent/enem/slime')
 end
 
 function norm(x,y)
@@ -361,10 +363,12 @@ function loadNewMap(isD,mapPath, mapID, music,first,t,t2,t3,t4)
             enem.hT = 0
             enem.rT = 1
             enem.state = idle
+
             enem:setPostSolve(function(collider, other, contact, normalimpulse, tangentimpulse)
-            local vx, vy = collider:getLinearVelocity()
-            collider:setLinearVelocity(0, 0)  -- Stop dynamic collider from being pushed
-    end)
+                local vx, vy = collider:getLinearVelocity()
+                collider:setLinearVelocity(0, 0)  -- Stop dynamic collider from being pushed
+            end)
+
             table.insert(ene, enem)
         end
     end
@@ -386,8 +390,8 @@ function loadNewMap(isD,mapPath, mapID, music,first,t,t2,t3,t4)
 			else
 				chestStates[chest] = 1	
 			end            
-        	end
-    	end
+        end
+    end
 
     if level.layers and level.layers["water"] then
         for i, obj in ipairs(level.layers["water"].objects) do
