@@ -181,7 +181,6 @@ end]]
 
 function startUp()
 
-    devmode = true
     --devmode plus devmode troll!!!
 
     if arg[2] == 'devmode' then
