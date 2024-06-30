@@ -165,6 +165,15 @@ function makeVars()
     cheating = false
 end
 
+function math.round(number)
+    if number >= 0 then
+        return math.floor(number + 0.5)
+    end
+
+    return math.ceil(number - 0.5)
+end
+
+
 --[[function vectorFromTo(fromX,fromY,toX,toY)
   local a = {}
 
@@ -181,6 +190,7 @@ end]]
 
 function startUp()
 
+    --devmode = true
     --devmode plus devmode troll!!!
 
     if arg[2] == 'devmode' then
@@ -247,9 +257,25 @@ function setWindowSize(ful, width, height)
 end
 
 function setScale()
-    local scalefax = 7.3/1.95
+    local scalefax = 4
+
     scale = (scalefax / 1920) * windowHeight
     scalew = love.graphics.getWidth() / preferedwindowsize
+
+
+    scale = math.round(scale)
+    scalew = math.round(scalew)
+
+
+    if scale < 1 then
+        scale = 1
+    end
+
+    if scalew < 1 then
+        scalew = 1
+    end
+
+
     if cam then
         cam:zoomTo(scale)
     end
